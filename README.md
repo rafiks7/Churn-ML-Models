@@ -27,7 +27,7 @@ The API supports the following machine learning models for churn prediction:
 - **stacking**: Stacking ensemble model.
 
 ## API Usage
-To use the API, send a POST request to the `/predict` endpoint with the appropriate data format. Below is an example of how to test the API using Python:
+To use the API, send a POST request to the `https://churn-ml-models-b1ch.onrender.com/predict` endpoint with the appropriate data format. Below is an example of how to test the API using Python:
 
 ### Example Code
 ```python
