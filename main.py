@@ -9,8 +9,8 @@ def load_model(filename):
     model = pickle.load(open(filename, 'rb'))
     return model
 
-def process_data(data):
-    data = pd.DataFrame(data, index=[0])
+def process_data(customer_data):
+    data = pd.DataFrame(customer_data, index=[0]).iloc[0]
 
     input_dict = {
         "CreditScore": data["CreditScore"],
@@ -36,8 +36,8 @@ def process_data(data):
 
     return input_df
 
-def process_data_selective(data):
-    data = pd.DataFrame(data, index=[0])
+def process_data_selective(customer_data):
+    data = pd.DataFrame(customer_data, index=[0]).iloc[0]
 
     input_dict = {
         "Age": data["Age"],
@@ -64,7 +64,7 @@ def get_prediction(request):
     elif model_name == 'stacking':
         model = load_model('stacking_smote.pkl')
     else:
-        return "Invalid model name"
+        raise ValueError(f"Invalid model name: '{model_name}'.\nPlease choose one of the following: 'xgb', 'rf', 'gb-selective', 'voting', 'stacking'.")
 
     if model_name == 'gb-selective':
         input_df = process_data_selective(request['data'])
@@ -81,13 +81,11 @@ async def predict(request: dict):
     prediction, probabilities = get_prediction(request)
 
     return {
-        "prediction": prediction[0],
-        "probabilities": {
-            "Exited": probabilities[0],
-            "Not Exited": probabilities[1]
-        }
+        "prediction": prediction.tolist()[0],
+        "probabilities": probabilities.tolist()
     }
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=10000)
+    #uvicorn.run(app, host="0.0.0.0", port=10000)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
